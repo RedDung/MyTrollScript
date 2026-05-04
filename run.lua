@@ -1,36 +1,51 @@
--- Xóa bản cũ nếu có
-local old = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui"):FindFirstChild("DungDepChaiGui")
-if old then old:Destroy() end
+-- Xóa sạch dấu vết cũ
+for _, v in pairs(game:GetService("CoreGui"):GetChildren()) do
+    if v.Name == "DungDepChaiSystem" then v:Destroy() end
+end
 
--- Tạo UI
-local gui = Instance.new("ScreenGui")
-gui.Name = "DungDepChaiGui"
-gui.ResetOnSpawn = false 
-gui.Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+-- Tạo giao diện chính
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "DungDepChaiSystem"
+screenGui.Parent = game:GetService("CoreGui")
+screenGui.IgnoreGuiInset = true -- Chạy tràn viền luôn
 
--- Tạo nhãn chữ
-local label = Instance.new("TextLabel")
-label.Parent = gui
-label.Size = UDim2.new(0, 5000, 0, 100) 
-label.Position = UDim2.new(1, 0, 0.1, 0) -- ĐÃ SỬA: Đưa lên cao hơn (0.1)
-label.BackgroundTransparency = 1
-label.TextColor3 = Color3.fromRGB(255, 215, 0) 
-label.TextSize = 45 -- ĐÃ SỬA: Chữ nhỏ lại cho tinh tế
-label.Font = Enum.Font.FredokaOne 
-label.Text = "✨ DŨNG ĐẸP CHAI ✨"
-label.TextStrokeTransparency = 0.5 -- Viền mờ đi tí cho đẹp
-label.TextWrapped = false 
-label.ZIndex = 10 
+-- Tạo một khung nền nhỏ để chữ nổi bật
+local frame = Instance.new("Frame")
+frame.Parent = screenGui
+frame.Size = UDim2.new(1, 0, 0.08, 0)
+frame.Position = UDim2.new(0, 0, 0.05, 0) -- Nằm gần trên cùng
+frame.BackgroundTransparency = 0.6 -- Mờ mờ cho ảo
+frame.BackgroundColor3 = Color3.new(0, 0, 0)
+frame.BorderSizePixel = 0
 
--- Hàm chạy vĩnh viễn
+-- Nhãn chữ "Dũng Đẹp Chai"
+local textLabel = Instance.new("TextLabel")
+textLabel.Parent = frame
+textLabel.Size = UDim2.new(0, 2000, 1, 0) -- Khung cực dài để chữ không bị nhảy dòng
+textLabel.BackgroundTransparency = 1
+textLabel.Text = "✨ DŨNG ĐẸP CHAI ĐANG THEO DÕI BẠN ✨"
+textLabel.TextColor3 = Color3.fromRGB(255, 255, 0) -- Vàng tươi
+textLabel.TextSize = 50 -- Vừa đủ to, không quá nhỏ
+textLabel.Font = Enum.Font.LuckiestGuy -- Font này bao nổi
+textLabel.TextStrokeTransparency = 0 -- Viền đen đậm
+
+-- Hàm chạy vĩnh viễn (Marquee v3)
 task.spawn(function()
     while true do
-        -- Xuất phát từ ngoài bên phải
-        label.Position = UDim2.new(1, 0, 0.1, 0)
-        -- Chuyển động (10 giây cho chữ nhỏ chạy thong dong)
-        local tweenInfo = TweenInfo.new(10, Enum.EasingStyle.Linear)
-        local tween = game:GetService("TweenService"):Create(label, tweenInfo, {Position = UDim2.new(-1.2, 0, 0.1, 0)})
+        textLabel.Position = UDim2.new(1, 0, 0, 0)
+        local tween = game:GetService("TweenService"):Create(
+            textLabel, 
+            TweenInfo.new(10, Enum.EasingStyle.Linear), 
+            {Position = UDim2.new(-1.5, 0, 0, 0)}
+        )
         tween:Play()
         tween.Completed:Wait()
     end
 end)
+
+-- Hiện thông báo test trong máy sếp
+game.StarterGui:SetCore("SendNotification", {
+    Title = "RedDung System",
+    Text = "Script Dũng Đẹp Chai đã lên sóng!",
+    Duration = 5
+})
